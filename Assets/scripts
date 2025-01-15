@@ -1,0 +1,81 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RhythmGame : MonoBehaviour
+{
+    // スコアとミスカウントの変数
+    private int currentScore = 0;
+    private int missCount = 0;
+
+    // リズムパターンを管理するリスト
+    private List<float> rhythmPattern = new List<float> { 1.0f, 2.5f, 4.0f };
+
+    // タイミングアイコンの位置
+    private float iconPosition = 0f;
+
+    // UIマネージャーの参照
+    private UIManager uiManager;
+
+    void Start()
+    {
+        // UIマネージャーの初期化
+        uiManager = new UIManager();
+        Debug.Log("ゲームが開始されました。");
+    }
+
+    void Update()
+    {
+        // ゲームループ処理
+        iconPosition += Time.deltaTime;
+
+        // プレイヤーの入力を検出
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            HandlePlayerInput();
+        }
+
+        // スコアを表示
+        uiManager.DisplayScore(currentScore);
+    }
+
+    // プレイヤーの入力処理
+    void HandlePlayerInput()
+    {
+        // 現在のアイコン位置とリズムパターンを比較して判定
+        float closestTime = FindClosestTime(iconPosition);
+        if (Mathf.Abs(iconPosition - closestTime) < 0.2f)
+        {
+            Debug.Log("Perfect!");
+            currentScore += 100;
+        }
+        else
+        {
+            Debug.Log("Miss!");
+            missCount++;
+        }
+    }
+
+    // 最も近いリズムパターンの時間を見つける
+    float FindClosestTime(float position)
+    {
+        float closestTime = float.MaxValue;
+        foreach (float time in rhythmPattern)
+        {
+            if (Mathf.Abs(time - position) < Mathf.Abs(closestTime - position))
+            {
+                closestTime = time;
+            }
+        }
+        return closestTime;
+    }
+}
+
+// UIManagerクラス
+public class UIManager
+{
+    // スコアの表示処理
+    public void DisplayScore(int score)
+    {
+        Debug.Log("スコア: " + score);
+    }
+}
